@@ -1,48 +1,42 @@
 ﻿using System;
 
-namespace cancelkeypress
+namespace reset_colour
 {
     class Program
     {
-        public static void Main()
-    {
-        ConsoleKeyInfo cki;
+   public static void Main()
+   {
+      // Get an array with the values of ConsoleColor enumeration members.
+      ConsoleColor[] colors = (ConsoleColor[]) ConsoleColor.GetValues(typeof(ConsoleColor));
+      // Save the current background and foreground colors.
+      ConsoleColor currentBackground = Console.BackgroundColor;
+      ConsoleColor currentForeground = Console.ForegroundColor;
 
-        Console.Clear();
+      // Display all foreground colors except the one that matches the background.
+      Console.WriteLine("All the foreground colors except {0}, the background color:",
+                        currentBackground);
+      foreach (var color in colors) {
+         if (color == currentBackground) continue;
 
-        // Establish an event handler to process key press events.
-        Console.CancelKeyPress += new ConsoleCancelEventHandler(myHandler);
-        while (true)
-        {
-            Console.Write("Press any key, or 'X' to quit, or ");
-            Console.WriteLine("CTRL+C to interrupt the read operation:");
+         Console.ForegroundColor = color;
+         Console.WriteLine("   The foreground color is {0}.", color);
+      }
+      Console.WriteLine();
+      // Restore the foreground color.
+      Console.ForegroundColor = currentForeground;
 
-            // Start a console read operation. Do not display the input.
-            cki = Console.ReadKey(true);
+      // Display each background color except the one that matches the current foreground color.
+      Console.WriteLine("All the background colors except {0}, the foreground color:",
+                        currentForeground);
+      foreach (var color in colors) {
+         if (color == currentForeground) continue;
 
-            // Announce the name of the key that was pressed .
-            Console.WriteLine($"  Key pressed: {cki.Key}\n");
+         Console.BackgroundColor = color;
+         Console.WriteLine("   The background color is {0}.", color);
+      }
 
-            // Exit if the user pressed the 'X' key.
-            if (cki.Key == ConsoleKey.X) break;
-        }
-    }
-
-    protected static void myHandler(object sender, ConsoleCancelEventArgs args)
-    {
-        Console.WriteLine("\nThe read operation has been interrupted.");
-
-        Console.WriteLine($"  Key pressed: {args.SpecialKey}");
-
-        Console.WriteLine($"  Cancel property: {args.Cancel}");
-
-        // Set the Cancel property to true to prevent the process from terminating.
-        Console.WriteLine("Setting the Cancel property to true...");
-        args.Cancel = true;
-
-        // Announce the new value of the Cancel property.
-        Console.WriteLine($"  Cancel property: {args.Cancel}");
-        Console.WriteLine("The read operation will resume...\n");
-    }
-    }
-}
+      // Restore the original console colors.
+      Console.ResetColor();
+      Console.WriteLine("\nOriginal colors restored...");
+   }
+} }
